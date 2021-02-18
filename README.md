@@ -12,7 +12,7 @@ B-cell acute lymphoblastic leukemia (B-ALL) is the most common childhood cancer,
 
 I plan to reproduce figure 2B from the Kruth et al. paper: 
 
-![Kruth et al](../../Downloads/blood766204f2.jpeg)
+![Kruth et al](./figure2.jpeg)
 
 ## Materials and Methods
 

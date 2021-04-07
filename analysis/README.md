@@ -1,0 +1,57 @@
+# Analysis of Gene Knock Down on Dexamethasone Sensitivity using ggplot2
+
+## Getting ready to create the figure
+
+Before getting started on reproducing this figure, I will set my working directory:
+
+```
+setwd("/mnt/nfs/clasnetappvm/homedirs/zimmermanjo/Documents/My_project/biol-4386-course-project-zimmermanjo/")
+```
+
+Next, I will load the libraries needed for this figure, which have already been installed:
+
+```
+library(readxl) 
+library(tidyverse)
+library(knitr)
+```
+
+## Loading the data
+
+To load the xslx file into R, I will use `read_xslx` along with `file.choose()`, which will allow me to select the file easily from the data directory. `read_xslx` also allows me to specify that I only want to load sheet 1 of this xslx file, which is the sheet that contains the Rho phenotypes (which are the effect on dexamethasone sensitivity). Sheet 2 contains Gamma phenotypes, which are the effect on overall cell growth. 
+
+```
+cagek.rhos <- read_xlsx(file.choose(), 1)
+```
+
+## Modifying the data prior to plotting
+
+In order to create the plot as it appears in the figure, I will need to modify the p-values so that they are expressed as -log10 values. I can use `mutate()` to do this and create a new variable which I will call "log10.p" and add this to a modified dataframe called "cagek.rhos.log10".
+
+```
+cagek.rhos.log10 <- cagek.rhos %>% 
+  mutate(log10.p = -1*log10(`Rho P value`))
+```
+
+Since the Rho phenotypes do not need modification prior to plotting, my data should now be ready to go. 
+
+## Creating the initial volcano plot
+
+I will use `ggplot2()` to create a scatterplot (using `geom_point()`) with the Rho phenotype on the x axis and the -log10(p-value) on the y axis. It appears that the y axis limits on the original figure go from 0 to about 16, so I will set my y axis limit accordingly. I will also modify the labels of my axes. For the y-axis, I can change this to match the actual y-axis in the figure. For the x-axis, I will put a temporary name of "Dexamethasone effect" and come back to this later to add the arrow as seen in the original figure. 
+
+```
+initial_plot <- ggplot(data = cagek.rhos.log10) +
+  geom_point(mapping = aes(x = `Rho Phenotype`, y = `log10.p`)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)"
+    )
+```
+
+So far, this looks like the points are in the correct places compared to the original figure. I can save this initial volcano plot as my first output with `ggsave()` to create an initial png file. 
+
+```
+ggsave(filename = "output/initial_volcano.png", plot = initial_plot, width = 6, height = 6, dpi = 300, units = "in")
+```
+

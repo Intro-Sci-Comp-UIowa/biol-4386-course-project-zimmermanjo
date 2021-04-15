@@ -82,3 +82,22 @@ This appears to be coloring the genes correctly. I will save this interim plot t
 ```
 ggsave(filename = "output/color_volcano.png", plot = color_plot, width = 4, height = 4, dpi = 300, units = "in")
 ```
+
+Now I will change the colors from the default colors that R gave these groups to the desired colors of green, purple, and gray. This can be done by creating new vectors and assigning those to the sigRho values.
+
+```
+pt_color <- c("green", "purple", "gray")
+names(pt_color) <- c("SENSITIVE", "RESISTANT", "NO")
+```
+
+Now I can make a new colored plot using these manually assigned colors to match the original figure:
+
+```
+color_plot_2 <- color_plot + scale_color_manual(values = pt_color)
+```
+
+And I will save a copy of this plot as well to track my progress:
+
+```
+ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, height = 4, dpi = 300, units = "in")
+```

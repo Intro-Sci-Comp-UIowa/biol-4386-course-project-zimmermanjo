@@ -51,3 +51,11 @@ color_plot <- ggplot(data = cagek.rhos.log10) +
 
 # Saving the colored plot as output
 ggsave(filename = "output/color_volcano.png", plot = color_plot, width = 4, height = 4, dpi = 300, units = "in")
+
+# Change colors to the green/purple/gray
+pt_color <- c("green", "purple", "gray")
+names(pt_color) <- c("SENSITIVE", "RESISTANT", "NO")
+color_plot_2 <- color_plot + scale_color_manual(values = pt_color)
+
+# Save new colored plot as output
+ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, height = 4, dpi = 300, units = "in")

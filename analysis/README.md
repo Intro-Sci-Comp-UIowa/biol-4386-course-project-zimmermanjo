@@ -55,3 +55,30 @@ So far, this looks like the points are in the correct places compared to the ori
 ggsave(filename = "output/initial_volcano.png", plot = initial_plot, width = 6, height = 6, dpi = 300, units = "in")
 ```
 
+## Adding color to the volcano plot
+
+The next step that I will address is adding color to the volcano plot based on which genes significantly sensitize and which genes significantly increase resistance to glucocorticoids. First, I create a new column of variables classifying each gene as "sensitive" (for genes which increase sensitivity to glucocorticoids), "resistant" (for genes which decrease sensitivity to glucocorticoids), and "no" (for genes with p >= 0.05). 
+
+```
+cagek.rhos.log10$sigRho <- "NO"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "SENSITIVE"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "RESISTANT"
+```
+
+Now, I can redo the volcano plot using the new variable "sigRho" as the color:
+
+```
+color_plot <- ggplot(data = cagek.rhos.log10) +
+  geom_point(mapping = aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)"
+  )
+```
+
+This appears to be coloring the genes correctly. I will save this interim plot to continue to track my progress:
+
+```
+ggsave(filename = "output/color_volcano.png", plot = color_plot, width = 4, height = 4, dpi = 300, units = "in")
+```

@@ -35,3 +35,19 @@ initial_plot <- ggplot(data = cagek.rhos.log10) +
 # Export initial plot as output
 ggsave(filename = "output/initial_volcano.png", plot = initial_plot, width = 6, height = 6, dpi = 300, units = "in")
 
+# Make new column in data set to tell it what is sensitizing and what is not
+cagek.rhos.log10$sigRho <- "NO"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "SENSITIVE"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "RESISTANT"
+
+# Trying to add the colors to the points
+color_plot <- ggplot(data = cagek.rhos.log10) +
+  geom_point(mapping = aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)"
+  )
+
+# Saving the colored plot as output
+ggsave(filename = "output/color_volcano.png", plot = color_plot, width = 4, height = 4, dpi = 300, units = "in")

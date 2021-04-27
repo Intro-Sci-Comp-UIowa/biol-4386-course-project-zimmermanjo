@@ -6,6 +6,7 @@ setwd("/mnt/nfs/clasnetappvm/homedirs/zimmermanjo/Documents/My_project/biol-4386
 library(readxl) 
 library(tidyverse)
 library(knitr)
+library(ggrepel)
 
 ## Not sure if I actually need these but they were used in a similar script example
 library(rJava)
@@ -36,9 +37,9 @@ initial_plot <- ggplot(data = cagek.rhos.log10) +
 ggsave(filename = "output/initial_volcano.png", plot = initial_plot, width = 6, height = 6, dpi = 300, units = "in")
 
 # Make new column in data set to tell it what is sensitizing and what is not
-cagek.rhos.log10$sigRho <- "NO"
-cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "SENSITIVE"
-cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "RESISTANT"
+cagek.rhos.log10$sigRho <- "p-value > 0.05"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "Sensitizing"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "Protective"
 
 # Trying to add the colors to the points
 color_plot <- ggplot(data = cagek.rhos.log10) +
@@ -54,8 +55,27 @@ ggsave(filename = "output/color_volcano.png", plot = color_plot, width = 4, heig
 
 # Change colors to the green/purple/gray
 pt_color <- c("green", "purple", "gray")
-names(pt_color) <- c("SENSITIVE", "RESISTANT", "NO")
+names(pt_color) <- c("Sensitizing", "Protective", "p-value > 0.05")
 color_plot_2 <- color_plot + scale_color_manual(values = pt_color)
 
 # Save new colored plot as output
 ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, height = 4, dpi = 300, units = "in")
+
+
+# Adding labels to genes - first create a new column in the data set to say which genes to name, then add names for these genes
+cagek.rhos.log10$labeled <- NA
+genes <- as.character(c("NR3C1", "MBNL1", "BRD4", "PIK3CD"))
+cagek.rhos.log10$labeled[cagek.rhos.log10$Symbol %in% c("NR3C1", "MBNL1", "PIK3CD", "BRD4")] <- genes
+
+# First attempt to make plot with the gene labels
+labeled_plot <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel() +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)"
+  ) + scale_color_manual(values = pt_color)
+
+# Save new colored, labeled plot as output
+ggsave(filename = "output/color_label_volcano.png", plot = labeled_plot, width = 6, height = 4, dpi = 300, units = "in")

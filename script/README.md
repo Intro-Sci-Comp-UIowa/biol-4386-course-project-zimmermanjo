@@ -12,6 +12,5 @@ The R script in this directory is a work in progress to fully reproduce the figu
 
 ## Tasks remaining
 
-- Modify x axis to include arrow with directions for sensitizing vs. protective
-- Edit figure legend with colors
-- Label MBNL1, PIK3CD, BRD4, and GR on the figure
+- Edit figure legend placement
+- Adjust label placement for MBNL1, PIK3CD, BRD4, and NR3C1 (GR) on the figure

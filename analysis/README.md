@@ -60,9 +60,9 @@ ggsave(filename = "output/initial_volcano.png", plot = initial_plot, width = 6, 
 The next step that I will address is adding color to the volcano plot based on which genes significantly sensitize and which genes significantly increase resistance to glucocorticoids. First, I create a new column of variables classifying each gene as "sensitive" (for genes which increase sensitivity to glucocorticoids), "resistant" (for genes which decrease sensitivity to glucocorticoids), and "no" (for genes with p >= 0.05). 
 
 ```
-cagek.rhos.log10$sigRho <- "NO"
-cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "SENSITIVE"
-cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "RESISTANT"
+cagek.rhos.log10$sigRho <- "p-value > 0.05"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` <0] <- "Sensitizing"
+cagek.rhos.log10$sigRho[cagek.rhos$`Rho P value` <0.05 & cagek.rhos$`Rho Phenotype` >0] <- "Protective"
 ```
 
 Now, I can redo the volcano plot using the new variable "sigRho" as the color:
@@ -87,7 +87,7 @@ Now I will change the colors from the default colors that R gave these groups to
 
 ```
 pt_color <- c("green", "purple", "gray")
-names(pt_color) <- c("SENSITIVE", "RESISTANT", "NO")
+names(pt_color) <- c("Sensitizing", "Protective", "p-value > 0.05")
 ```
 
 Now I can make a new colored plot using these manually assigned colors to match the original figure:
@@ -101,3 +101,31 @@ And I will save a copy of this plot as well to track my progress:
 ```
 ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, height = 4, dpi = 300, units = "in")
 ```
+
+Next, I will add labels for the 4 genes which are labeled in the original figure (MBNL1, PIK3CD, BRD4, and NR3C1, which is the same as GR). To do this, I first create a new column in the data frame called "labeled" which will include the name for only the genes that I want to be labeled in the final figure:
+
+```
+cagek.rhos.log10$labeled <- NA
+genes <- as.character(c("NR3C1", "MBNL1", "BRD4", "PIK3CD"))
+cagek.rhos.log10$labeled[cagek.rhos.log10$Symbol %in% c("NR3C1", "MBNL1", "PIK3CD", "BRD4")] <- genes
+```
+
+Then I will use this label column to redo the plot with these labels applied:
+
+```
+labeled_plot <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel() +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)"
+  ) + scale_color_manual(values = pt_color)
+```
+
+The labels appear to be in the correct locations, but they don't appear as nicely as they are in the original figure. I will save this draft for now and work on adjusting these labels later:
+
+```
+ggsave(filename = "output/color_label_volcano.png", plot = labeled_plot, width = 6, height = 4, dpi = 300, units = "in")
+```
+

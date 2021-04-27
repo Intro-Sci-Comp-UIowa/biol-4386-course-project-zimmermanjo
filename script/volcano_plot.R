@@ -64,7 +64,7 @@ ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, 
 
 # Adding labels to genes - first create a new column in the data set to say which genes to name, then add names for these genes
 cagek.rhos.log10$labeled <- NA
-genes <- as.character(c("NR3C1", "MBNL1", "BRD4", "PIK3CD"))
+genes <- as.character(c("GR", "MBNL1", "BRD4", "PIK3CD"))
 cagek.rhos.log10$labeled[cagek.rhos.log10$Symbol %in% c("NR3C1", "MBNL1", "PIK3CD", "BRD4")] <- genes
 
 # First attempt to make plot with the gene labels
@@ -79,3 +79,21 @@ labeled_plot <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `lo
 
 # Save new colored, labeled plot as output
 ggsave(filename = "output/color_label_volcano.png", plot = labeled_plot, width = 6, height = 4, dpi = 300, units = "in")
+
+# Changing the position of the legend to top middle and changing background color
+plot_labeled_legend_bg <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel() +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) 
+
+# Save new plot as output - only thing left is to fix label placement (and try to change size of those points if possible)
+ggsave(filename = "output/plot_labeled_legend_bg.png", plot = plot_labeled_legend_bg, width = 6, height = 4, dpi = 300, units = "in")

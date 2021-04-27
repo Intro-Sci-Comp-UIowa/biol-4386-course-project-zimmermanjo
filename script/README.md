@@ -9,8 +9,13 @@ The R script in this directory is a work in progress to fully reproduce the figu
 - Making initial volcano plot using ggplot2
 - Changed y-axis limits and label
 - Added colors for sensitizing (green) vs. protective (purple) vs. non-significant (gray) genes
+- Edited figure legend placement
+- Edited plot background
 
 ## Tasks remaining
 
-- Edit figure legend placement
-- Adjust label placement for MBNL1, PIK3CD, BRD4, and NR3C1 (GR) on the figure
+- Attempt to adjust label placement for MBNL1, PIK3CD, BRD4, and NR3C1 (GR) on the figure
+
+## Tasks which were likely done using Illustrator rather than RStudio
+
+- Changing the x-axis to an arrow rather than simple label

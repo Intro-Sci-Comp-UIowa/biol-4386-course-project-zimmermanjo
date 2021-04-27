@@ -106,7 +106,7 @@ Next, I will add labels for the 4 genes which are labeled in the original figure
 
 ```
 cagek.rhos.log10$labeled <- NA
-genes <- as.character(c("NR3C1", "MBNL1", "BRD4", "PIK3CD"))
+genes <- as.character(c("GR", "MBNL1", "BRD4", "PIK3CD"))
 cagek.rhos.log10$labeled[cagek.rhos.log10$Symbol %in% c("NR3C1", "MBNL1", "PIK3CD", "BRD4")] <- genes
 ```
 
@@ -129,3 +129,26 @@ The labels appear to be in the correct locations, but they don't appear as nicel
 ggsave(filename = "output/color_label_volcano.png", plot = labeled_plot, width = 6, height = 4, dpi = 300, units = "in")
 ```
 
+In the next step, I will make two changes using themes. First, I will change the background to white with `theme_bw()`. To remove the grid marks, I will use two additional themes, `panel.grid.major` and `panel.grid.minor` and set these to white. Then, I will change the position of the legend to be at the top middle of the plot as in the original figure. I will also remove the title from the legend by changing the labs to include `color = NULL`. 
+
+```
+plot_labeled_legend_bg <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel() +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) 
+```
+
+I will save this plot as well, with the only remaining step to see if I can adjust the labels of 4 key genes more (particularly PIK3CD) so that it doesn't overlap with other data points. 
+
+```
+ggsave(filename = "output/plot_labeled_legend_bg.png", plot = plot_labeled_legend_bg, width = 6, height = 4, dpi = 300, units = "in")
+```

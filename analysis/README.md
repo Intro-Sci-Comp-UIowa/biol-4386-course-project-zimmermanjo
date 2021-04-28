@@ -207,6 +207,6 @@ I will save this as my final plot for the project:
 ggsave(filename = "output/final_plot.png", plot = final_plot, width = 6, height = 5, dpi = 300, units = "in")
 ```
 
-## Remaining differences from the oritinal figure
+## Remaining differences from the original figure
 
 There are only 2 differences from the original figure remaining. The x-axis label is just "Dexamethasone Sensitivity" and not an arrow, and some of the labels for the key genes are in slightly different locations relative to the points. These are both changes which could easily be made using Adobe Illustrator, so I did not attempt to do these using R. 

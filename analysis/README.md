@@ -13,7 +13,7 @@ Next, I will load the libraries needed for this figure, which have already been 
 ```
 library(readxl) 
 library(tidyverse)
-library(knitr)
+library(ggrepel)
 ```
 
 ## Loading the data
@@ -102,6 +102,8 @@ And I will save a copy of this plot as well to track my progress:
 ggsave(filename = "output/color_volcano_2.png", plot = color_plot_2, width = 4, height = 4, dpi = 300, units = "in")
 ```
 
+## Adding key gene labels
+
 Next, I will add labels for the 4 genes which are labeled in the original figure (MBNL1, PIK3CD, BRD4, and NR3C1, which is the same as GR). To do this, I first create a new column in the data frame called "labeled" which will include the name for only the genes that I want to be labeled in the final figure:
 
 ```
@@ -129,6 +131,8 @@ The labels appear to be in the correct locations, but they don't appear as nicel
 ggsave(filename = "output/color_label_volcano.png", plot = labeled_plot, width = 6, height = 4, dpi = 300, units = "in")
 ```
 
+## Changing background theme
+
 In the next step, I will make two changes using themes. First, I will change the background to white with `theme_bw()`. To remove the grid marks, I will use two additional themes, `panel.grid.major` and `panel.grid.minor` and set these to white. Then, I will change the position of the legend to be at the top middle of the plot as in the original figure. I will also remove the title from the legend by changing the labs to include `color = NULL`. 
 
 ```
@@ -152,3 +156,57 @@ I will save this plot as well, with the only remaining step to see if I can adju
 ```
 ggsave(filename = "output/plot_labeled_legend_bg.png", plot = plot_labeled_legend_bg, width = 6, height = 4, dpi = 300, units = "in")
 ```
+
+## Adjusting key gene label positioning
+
+To adjust the overlap of the 4 key gene labels, I was mainly concerned about moving PIK3CD so that it was not on top of other data points. So, I used the `nudge_x` and `nudge_y` arguments along with two `ifelse` statements to only move the PIK3CD label differently and treating the other 3 labels the same.
+
+I also added a final line to this script to make the points in the figure legend bigger (and get rid of the letter which was overlying the points) with the `guides` function. 
+
+```{r move_PIK3CD_label}
+ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel(nudge_x = ifelse(cagek.rhos.log10$labeled == "PIK3CD", -0.5, 0), nudge_y = ifelse(cagek.rhos.log10$labeled == "PIK3CD", 0.75, 0.6)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) +
+  guides(color = guide_legend(override.aes = list(size = 3)))
+```
+
+## Changing key gene point size
+
+The last step is to increase the size of the points for the 4 key genes. To do this, I used another `ifelse` statement inside `geom_point` to only increase the size of the genes I had defined earlier and leave all others the same size. 
+
+```{r increase_key_gene_size}
+final_plot <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point(size = ifelse(cagek.rhos.log10$labeled %in% genes, 5, 1)) +
+  geom_text_repel(nudge_x = ifelse(cagek.rhos.log10$labeled == "PIK3CD", -0.5, 0), nudge_y = ifelse(cagek.rhos.log10$labeled == "PIK3CD", 0.75, 0.6)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) +
+  guides(color = guide_legend(override.aes = list(size = 3)))
+```
+
+I will save this as my final plot for the project:
+
+```{r save_final_plot}
+ggsave(filename = "output/final_plot.png", plot = final_plot, width = 6, height = 5, dpi = 300, units = "in")
+```
+
+## Remaining differences from the oritinal figure
+
+There are only 2 differences from the original figure remaining. The x-axis label is just "Dexamethasone Sensitivity" and not an arrow, and some of the labels for the key genes are in slightly different locations relative to the points. These are both changes which could easily be made using Adobe Illustrator, so I did not attempt to do these using R. 

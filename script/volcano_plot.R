@@ -9,6 +9,7 @@ library(knitr)
 library(ggrepel)
 
 ## Not sure if I actually need these but they were used in a similar script example
+## Didn't end up needing these
 library(rJava)
 library(plot3Drgl)
 library(cluster)
@@ -97,3 +98,40 @@ plot_labeled_legend_bg <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype
 
 # Save new plot as output - only thing left is to fix label placement (and try to change size of those points if possible)
 ggsave(filename = "output/plot_labeled_legend_bg.png", plot = plot_labeled_legend_bg, width = 6, height = 4, dpi = 300, units = "in")
+
+# Playing with sizes of points in figure and legend
+## fixed point sizes in legend using `guides` on line 116
+ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point() +
+  geom_text_repel() +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) +
+  guides(color = guide_legend(override.aes = list(size = 3)))
+
+## got point sizes different for the labeled genes using the argument inside geom_point on line 121
+## got the labels close enough to accurate with nudge_x and nudge_y in geom_text_repel on line 122
+final_plot <- ggplot(data = cagek.rhos.log10, aes(x = `Rho Phenotype`, y = `log10.p`, col=sigRho, label=labeled)) +
+  geom_point(size = ifelse(cagek.rhos.log10$labeled %in% genes, 5, 1)) +
+  geom_text_repel(nudge_x = ifelse(cagek.rhos.log10$labeled == "PIK3CD", -0.5, 0), nudge_y = ifelse(cagek.rhos.log10$labeled == "PIK3CD", 0.75, 0.6)) +
+  ylim(0, 16) +
+  labs(
+    x = "Dexamethasone effect",
+    y = "-log10(p-value)",
+    color = NULL
+  ) + scale_color_manual(values = pt_color) +
+  theme_bw() +
+  theme(panel.grid.major = element_line(color = "white")) +
+  theme(panel.grid.minor = element_line(color = "white")) +
+  theme(legend.position = c(0.5, 0.85)) +
+  guides(color = guide_legend(override.aes = list(size = 3)))
+
+# saving final version of plot
+ggsave(filename = "output/final_plot.png", plot = final_plot, width = 6, height = 5, dpi = 300, units = "in")
